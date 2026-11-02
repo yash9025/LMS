@@ -1,17 +1,34 @@
 """
 Selenium Automation Test Suite for LMS Login Page
-Uses suitable locators (By.ID) and explicit waits (WebDriverWait & expected_conditions)
+Automates testing against the unified Flask application in app.py (/login route).
+Uses By.ID locators and explicit waits (WebDriverWait & expected_conditions)
 to verify:
   1. Successful login scenario
   2. Invalid credentials error message scenario
 """
 
-from pathlib import Path
+import threading
+import time
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from werkzeug.serving import make_server
+
+from app import app
+
+
+@pytest.fixture(scope="session")
+def live_server():
+    """Starts the Flask app on a local test port in a background daemon thread."""
+    server = make_server("127.0.0.1", 5001, app)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    time.sleep(0.5)
+    base_url = "http://127.0.0.1:5001"
+    yield base_url
+    server.shutdown()
 
 
 @pytest.fixture(scope="module")
@@ -29,10 +46,9 @@ def driver():
 
 
 @pytest.fixture(autouse=True)
-def open_login_page(driver):
-    """Navigates to the local login.html page before each test."""
-    login_html_path = Path(__file__).parent.resolve() / "login.html"
-    driver.get(login_html_path.as_uri())
+def open_login_page(driver, live_server):
+    """Navigates to the /login endpoint of the running Flask app before each test."""
+    driver.get(f"{live_server}/login")
 
 
 def test_successful_login(driver):
