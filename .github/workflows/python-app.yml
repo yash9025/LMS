@@ -30,7 +30,7 @@ jobs:
       - name: Display Workflow Execution Status
         if: always()
         run: |
-          echo "### Workflow Execution Status 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "### Workflow Execution Status" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
@@ -42,3 +42,4 @@ jobs:
           echo "=========================================="
           echo "Workflow completed with status: ${{ job.status }}"
           echo "=========================================="
+
