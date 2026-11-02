@@ -1,10 +1,8 @@
-# Use official lightweight Python base image
 FROM python:3.11-slim
 
 # Set working directory inside container
 WORKDIR /app
 
-# Set environment variables for unbuffered logging and default port
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=5000
