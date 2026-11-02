@@ -1,0 +1,44 @@
+name: Python Script Runner
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-python:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -s requirements.txt ]; then pip install -r requirements.txt; else echo "No dependencies to install in requirements.txt"; fi
+
+      - name: Run Python script
+        run: |
+          python exam.py
+
+      - name: Display Workflow Execution Status
+        if: always()
+        run: |
+          echo "### Workflow Execution Status 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Triggered By** | \`${{ github.actor }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Execution Status** | **${{ job.status }}** |" >> $GITHUB_STEP_SUMMARY
+          echo ""
+          echo "=========================================="
+          echo "Workflow completed with status: ${{ job.status }}"
+          echo "=========================================="
